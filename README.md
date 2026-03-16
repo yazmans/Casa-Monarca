@@ -1,6 +1,6 @@
 # Casa Monarca - Sistema de Optimización de Inventario y Menús
 
-Este repositorio contiene la plataforma web y el motor de optimización desarrollados para **Casa Monarca**. El sistema está diseñado para facilitar la gestión delhttps://github.com/yazmans/Casa-Monarca/tree/main inventario de alimentos y automatizar la creación de menús diarios, aplicando modelos matemáticos para minimizar costos operativos mientras se cumplen estrictas restricciones nutricionales.
+Este repositorio contiene la plataforma web y el motor de optimización desarrollados para **Casa Monarca**. El sistema está diseñado para facilitar la gestión del inventario de alimentos y automatizar la creación de menús diarios, aplicando modelos matemáticos para minimizar costos operativos mientras se cumplen estrictas restricciones nutricionales.
 
 ## Arquitectura
 
