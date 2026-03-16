@@ -1,40 +1,77 @@
-# Casa Monarca - Sistema de Optimización de Inventario y Menús
+# Casa Monarca — Sistema de Administración de Inventario y Menús
+Aplicación web para **Casa Monarca** que permite gestionar el inventario de alimentos y generar menús semanales optimizados usando programación lineal (CBC).
 
-Este repositorio contiene la plataforma web y el motor de optimización desarrollados para **Casa Monarca**. El sistema está diseñado para facilitar la gestión del inventario de alimentos y automatizar la creación de menús diarios, aplicando modelos matemáticos para minimizar costos operativos mientras se cumplen estrictas restricciones nutricionales.
+---
 
-## Arquitectura
+## ¿Qué hace?
 
-El proyecto utiliza una arquitectura dividida en un frontend moderno y un backend dedicado a la lógica de optimización:
+La app tiene cuatro secciones principales:
 
-### Frontend
-* **Next.js (App Router) & React:** Framework principal de la interfaz web.
-* **TypeScript:** Lenguaje principal (92% del código fuente) para garantizar un tipado seguro.
-* **Tailwind CSS / Shadcn UI:** Estilos y componentes visuales (`postcss.config.mjs`, `components.json`).
-* **pnpm:** Gestor de paquetes principal del proyecto.
+| Pestaña | Descripción |
+|---|---|
+| **Optimizar** | Genera un menú semanal de costo mínimo que cumple requerimientos nutricionales, restricciones de almacenamiento y variedad. |
+| **Menú Manual** | Planificador semanal para armar menús a mano. |
+| **Inventario** | Tabla de productos con stock actual, alertas de capacidad y formulario para agregar/eliminar insumos. |
+| **Recetas** | Catálogo de recetas disponibles con su composición de ingredientes. |
 
-### Backend y Optimización
-* **Python:** El motor backend (`/backend`) procesa la lógica de datos.
-* **Investigación de Operaciones:** El sistema resuelve modelos de programación lineal y entera (método simplex, análisis de sensibilidad) para encontrar la distribución óptima de los alimentos.
+### Motor de optimización (Python)
 
-## Estructura del Proyecto
+El archivo [backend/optimize.py](backend/optimize.py) resuelve un modelo de **programación lineal entera mixta** con PuLP que:
 
-* `/app`: Rutas principales, páginas y layouts de la aplicación web (Next.js).
-* `/backend`: Scripts de Python, lógica del servidor y algoritmos de optimización determinista.
-* `/components`: Componentes reutilizables de React para la interfaz de usuario.
-* `/hooks`: Custom hooks para el manejo de estado y lógica en el frontend.
-* `/lib`: Funciones utilitarias y configuraciones compartidas.
-* `/public`: Imágenes, íconos y otros activos estáticos.
-* `/styles`: Archivos de estilo globales (CSS).
+- Planifica **7 días × 3 comidas** (Desayuno, Comida, Cena).
+- Soporta **3 tamaños de porción** (Pequeña, Mediana, Grande) y sus requerimientos de proteína/guarnición.
+- Maneja **3 tipos de almacenamiento** (Ambiente, Refrigerado, Congelado) con capacidades y vida útil por ingrediente.
+- Minimiza el **costo total de compra** garantizando:
+  - Variedad de proteínas y guarniciones (sin repetir en días consecutivos).
+  - Al menos una comida de Res y una de Mojarra en la semana.
+  - Reserva de emergencia del 15 % al final de la semana.
+  - Restricciones de caducidad por tipo de almacenamiento.
 
-## Instalación y Ejecución Local
+El front-end llama al solver vía la API Route [`/api/optimize`](app/api/optimize/route.ts), que ejecuta el script Python como subproceso y devuelve el resultado en JSON.
 
-### Prerrequisitos
-* [Node.js](https://nodejs.org/) (versión 18 o superior recomendada)
-* [pnpm](https://pnpm.io/)
-* [Python 3.x](https://www.python.org/)
+---
 
-### Frontend
+## Requisitos
 
-1. Instala las dependencias de Node:
-   ```bash
-   pnpm install
+- **Node.js** ≥ 18 y **pnpm**
+- **Python 3** con la librería `pulp` instalada
+
+```bash
+pip install pulp
+```
+
+> El proyecto actualmente apunta a Python en `/Library/Frameworks/Python.framework/Versions/3.14/bin/python3` (macOS). Si tu instalación está en otra ruta, edita [app/api/optimize/route.ts](app/api/optimize/route.ts) y ajusta la ruta del ejecutable.
+
+---
+
+## Cómo correrlo
+
+### 1. Instalar dependencias de Node
+
+```bash
+pnpm install
+```
+
+### 2. Levantar el servidor de desarrollo
+
+```bash
+pnpm dev
+```
+
+Abre [http://localhost:3000](http://localhost:3000) en el navegador.
+
+### Otros comandos
+
+| Comando | Descripción |
+|---|---|
+| `pnpm build` | Genera el build de producción |
+| `pnpm start` | Inicia el servidor en modo producción |
+| `pnpm lint` | Corre ESLint |
+
+---
+
+## Stack tecnológico
+
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Recharts
+- **Backend / Solver**: Python 3, PuLP (CBC)
+- **Gestor de paquetes**: pnpm
