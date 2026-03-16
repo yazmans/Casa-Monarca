@@ -44,7 +44,7 @@ pip install pulp
 
 ---
 
-## Cómo correrlo
+## ¿Cómo correrlo?
 
 ### 1. Instalar dependencias de Node
 
